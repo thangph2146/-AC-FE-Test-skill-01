@@ -1,5 +1,5 @@
 # -AC-FE-Test-skill-01
-Run the app: cd data
+Run the app:
 
 Step 1: install nodejs
 
