@@ -33,15 +33,18 @@ export default async function enterSearchTerm(info) {
                         return key.toString();
                     })
                     : [];
+
+
             console.log(`\n\ `)
             console.log(`Enter term at below:`)
             console.log(fields)
+
             const answers = await inquirer.prompt([
                 { type: 'input', name: 'enterSearchTerm', message: `Enter search term: ` }
             ])
             const pressOption = {
                 enterSearchTerm: answers.enterSearchTerm.toString().trim(),
-                selectOptions: info.selectOptions
+                selectOptions: info.selectOptions,
             }
             if (pressOption.enterSearchTerm === '') {
                 console.debug(`\n\ Note: You don't enter any options please try again`)
@@ -53,8 +56,15 @@ export default async function enterSearchTerm(info) {
                 if (!fields.includes(pressOption.enterSearchTerm)) {
                     console.debug(`\n\ Note: Value you enter don't have in options please try again`)
                     enterSearchTerm(info)
-                } else
-                    enterSearchValue(pressOption)
+                } else {
+                    const fieldsObject =
+                        JSON.parse(data).length > 0
+                            ? (JSON.parse(data))
+                            : [];
+
+                    enterSearchValue({ ...pressOption, dataChoosing: fieldsObject })
+                }
+
             }
         })
 

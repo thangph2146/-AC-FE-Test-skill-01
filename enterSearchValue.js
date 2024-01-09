@@ -70,96 +70,50 @@ export default async function enterSearchValue(info) {
                     enterSearchValue(info)
                 } else {
                     console.log(`=> Result:`);
-                    if (info.enterSearchTerm === '_id') {
-                        fs.readFile("teams.json", "utf8", async function (err, teamsData) {
+
+                    fs.readFile("nations.json", "utf8", async function (err, nationsData) {
+                        if (err) {
+                            console.log("Error reading", err);
+                        }
+                        const newNationsData = JSON.parse(nationsData)
+                        fs.readFile("teams.json", "utf8", function (err, teamsData) {
                             if (err) {
                                 console.log("Error reading", err);
                             }
                             const newTeamsData = JSON.parse(teamsData)
-                            const teamValue = () => {
-                                return newTeamsData.filter(el => {
-                                    return el._id.toString() === pressOption.enterSearchValue.toString()
-                                })[0]
 
-                            }
-                            const nation_id = teamValue().nation_id
-                            fs.readFile("nations.json", "utf8", function (err, nationsData) {
+                            fs.readFile("players.json", "utf8", function (err, playerData) {
                                 if (err) {
                                     console.log("Error reading", err);
                                 }
-                                const newNationsData = JSON.parse(nationsData)
-                                const nationValue = () => {
-                                    return newNationsData.filter(el => {
-                                        return el._id.toString() === pressOption.enterSearchValue.toString()
-                                    })[0]
-
-                                }
-                                fs.readFile("players.json", "utf8", function (err, playerData) {
-                                    if (err) {
-                                        console.log("Error reading", err);
-                                    }
-                                    const newPlayerData = JSON.parse(playerData)
-                                    const playerValue = () => {
-                                        return newPlayerData.filter(el => {
-                                            return el.nation_id.toString() === nation_id.toString()
-                                        })
-
-                                    }
-                                    Object.entries(teamValue()).map(el => {
-                                        console.log(`${el[0]}: `, el[1]);
-                                    })
-                                    console.log('nation_name: ', nationValue().name);
-                                    console.log('players: ', playerValue().map(el => el.name));
-
-
-                                })
-                            })
-
-
-
-                        })
-                    } else {
-                        fs.readFile("nations.json", "utf8", async function (err, nationsData) {
-                            if (err) {
-                                console.log("Error reading", err);
-                            }
-                            const newNationsData = JSON.parse(nationsData)
-                            fs.readFile("teams.json", "utf8", function (err, teamsData) {
-                                if (err) {
-                                    console.log("Error reading", err);
-                                }
-                                const newTeamsData = JSON.parse(teamsData)
-
-                                fs.readFile("players.json", "utf8", function (err, playerData) {
-                                    if (err) {
-                                        console.log("Error reading", err);
-                                    }
-                                    const newPlayerData = JSON.parse(playerData)
-
-                                    console.log(`${info.enterSearchTerm.toString()}: `, pressOption.enterSearchValue.toString())
-                                    console.log(`teams: `, newTeamsData.filter(el => {
-                                        const newEl = Object.entries(el)
-                                        return newEl.some(item => !!item[0] && !!item[1] && item[0].toString() === info.enterSearchTerm.toString() && item[1].toString() === pressOption.enterSearchValue.toString())
-                                    }).map(el => el.name));
-                                    console.log(`nations: `, newNationsData.filter(el => {
-                                        const newEl = Object.entries(el)
-                                        return newEl.some(item => !!item[0] && !!item[1] && item[0].toString() === info.enterSearchTerm.toString() && item[1].toString() === pressOption.enterSearchValue.toString())
-                                    }).map(el => el.name));
-                                    console.log(`players: `, newPlayerData.filter(el => {
-                                        const newEl = Object.entries(el)
-                                        return newEl.some(item => !!item[0] && !!item[1] && item[0].toString() === info.enterSearchTerm.toString() && item[1].toString() === pressOption.enterSearchValue.toString())
-                                    }).map(el => el.name));
-
+                                const newPlayerData = JSON.parse(playerData)
+                                const indexOfData = info.dataChoosing.findIndex(x => x[info.enterSearchTerm].toString() === pressOption.enterSearchValue.toString())
+                                const dataChoosing = info.dataChoosing[indexOfData]
+                                Object.entries(dataChoosing).map((item) => {
+                                    console.log(`${item[0].toString()}: ${item[1].toString()}`)
                                 })
 
+                                info.selectOptions !== '2' && (dataChoosing._id || dataChoosing.nation_id) && console.log(`teams_name: `,
+                                    newTeamsData.find(x => dataChoosing._id === x._id || dataChoosing.nation_id === x.nation_id).name
+                                );
+                                info.selectOptions !== '3' && dataChoosing._id && console.log(`nations_name: `,
+                                    newNationsData.find(x => dataChoosing._id === x._id).name
+                                );
+                                info.selectOptions !== '1' && dataChoosing.nation_id && console.log(`players: `, newPlayerData.filter(el => {
+                                    return el.nation_id.toString() === dataChoosing.nation_id.toString()
+                                }
+                                ).map(el => el.name));
+
                             })
+
                         })
+                    })
 
 
-                    }
                 }
-
             }
+
+
         })
 
     } catch (error) {
